@@ -1,5 +1,3 @@
 FROM nginxinc/nginx-unprivileged
-USER root
-RUN rm /etc/nginx/conf.d/default.conf && apt-get update && apt-get install -y curl
-USER nginx
+RUN rm /etc/nginx/conf.d/default.conf 
 COPY plain-text.conf /etc/nginx/conf.d
