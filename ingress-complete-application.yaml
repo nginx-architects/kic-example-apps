@@ -1,30 +1,30 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: https-app
+  name: ingress-app
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: https-app
-  namespace: https-app
+  name: ingress-app
+  namespace: ingress-app
   labels:
-    app: https-app
+    app: ingress-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: https-app
+      app: ingress-app
   template:
     metadata:
       labels:
-        app: https-app
+        app: ingress-app
     spec:
       containers:
-      - name: https-app
-        image: jgoodier/nginx-hello:ssl
+      - name: ingress-app
+        image: jgoodier/nginx-hello:plaintext
         ports:
-          - containerPort: 8443
+          - containerPort: 80
             protocol: TCP
         resources: {}
         imagePullPolicy: Always
@@ -32,35 +32,36 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: https-app
-  namespace: https-app
+  name: ingress-app
+  namespace: ingress-app
 spec:
   ports:
-    - name: https-app
+    - name: ingress-app
       protocol: TCP
-      port: 8443
-      targetPort: 8443
+      port: 80
+      targetPort: 8080
   selector:
-    app: https-app
+    app: ingress-app
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  annotations:
-    nginx.org/ssl-services: "https-app"
-  namespace: https-app
-  name: https-app
+  namespace: ingress-app
+  name: ingress-app
+# if backend is SSL:  
+#   annotations:
+#     nginx.org/ssl-services: "ingress-app"  
 spec:
   ingressClassName: nginx
   rules:
-  - host: https.kicapps.nginx.rocks
+  - host: ingress.nginx1.nginx.rocks
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: https-app
+            name: ingress-app
             port:
-              number: 8443
+              number: 80
