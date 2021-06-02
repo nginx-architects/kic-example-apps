@@ -51,8 +51,8 @@ metadata:
   name: virtualserver-app
   namespace: virtualserver-app
 spec:
-  ingressClassName: nginx2
-  host: vs.nginx2.nginx.rocks
+  ingressClassName: nginx3
+  host: vs.nginx3.nginx.rocks
   # tls:
   #   secret: cafe-secret
   upstreams:
@@ -70,8 +70,8 @@ metadata:
   name: virtualserverroute-app
   namespace: virtualserverroute-app
 spec:
-  ingressClassName: nginx2
-  host: vs.nginx2.nginx.rocks
+  ingressClassName: nginx3
+  host: vs.nginx3.nginx.rocks
   # tls:
   #   secret: cafe-secret
   upstreams:

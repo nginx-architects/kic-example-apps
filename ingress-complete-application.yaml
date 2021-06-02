@@ -53,9 +53,9 @@ metadata:
 #   annotations:
 #     nginx.org/ssl-services: "ingress-app"  
 spec:
-  ingressClassName: nginx
+  ingressClassName: nginx3
   rules:
-  - host: ingress.nginx1.nginx.rocks
+  - host: ingress.nginx3.nginx.rocks
     http:
       paths:
       - path: /
