@@ -49,9 +49,9 @@ kind: Ingress
 metadata:
   namespace: ingress-app
   name: ingress-app
-# if backend is SSL:  
+# if backend is SSL:
 #   annotations:
-#     nginx.org/ssl-services: "ingress-app"  
+#     nginx.org/ssl-services: "ingress-app"
 spec:
   ingressClassName: nginx3
   rules:

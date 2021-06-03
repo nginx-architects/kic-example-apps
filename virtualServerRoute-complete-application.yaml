@@ -51,6 +51,7 @@ metadata:
   name: virtualserver-app
   namespace: virtualserver-app
 spec:
+  # which ingress controller to use, must match below
   ingressClassName: nginx3
   host: vs.nginx3.nginx.rocks
   # tls:
@@ -63,13 +64,14 @@ spec:
   - path: /items
     action:
       pass: items
----      
+---
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServerRoute
 metadata:
   name: virtualserverroute-app
   namespace: virtualserverroute-app
 spec:
+  # which ingress controller to use, must match above
   ingressClassName: nginx3
   host: vs.nginx3.nginx.rocks
   # tls:

@@ -50,6 +50,7 @@ metadata:
   name: virtualserver-app
   namespace: virtualserver-app
 spec:
+  # which ingress controller to use
   ingressClassName: nginx2
   host: vs.nginx2.nginx.rocks
   # tls:

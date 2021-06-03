@@ -22,6 +22,7 @@ spec:
     spec:
       containers:
       - name: tls-passthrough-app
+        # this pod only serves TLS
         image: jgoodier/nginx-hello:ssl
         ports:
           - containerPort: 8443
