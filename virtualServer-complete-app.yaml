@@ -1,27 +1,27 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ingress-app
+  name: virtualserver-app
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ingress-app
-  namespace: ingress-app
+  name: virtualserver-app
+  namespace: virtualserver-app
   labels:
-    app: ingress-app
+    app: virtualserver-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ingress-app
+      app: virtualserver-app
   template:
     metadata:
       labels:
-        app: ingress-app
+        app: virtualserver-app
     spec:
       containers:
-      - name: ingress-app
+      - name: virtualserver-app
         image: nginxinc/nginx-unprivileged
         ports:
           - containerPort: 8080
@@ -49,44 +49,40 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ingress-app-svc
-  namespace: ingress-app
+  name: virtualserver-app
+  namespace: virtualserver-app
 spec:
   ports:
-    - protocol: TCP
+    - name: virtualserver-app
+      protocol: TCP
       port: 8080
       targetPort: 8080
   selector:
-    app: ingress-app
+    app: virtualserver-app
   type: ClusterIP
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
 metadata:
-  namespace: ingress-app
-  name: ingress-app
-# if backend is SSL:
-#   annotations:
-#     nginx.org/ssl-services: "ingress-app"
+  name: virtualserver-app
+  namespace: virtualserver-app
 spec:
   ingressClassName: nginx
-  rules:
-  - host: ingress.k8s.nginx.rocks
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: ingress-app-svc
-            port:
-              number: 8080
+  host: "hello-vs.k8s.nginx.rocks"
+  routes:
+  - path: /
+    action:
+      pass: virtualserver-app-upstream
+  upstreams:
+    - name: virtualserver-app-upstream
+      service: virtualserver-app
+      port: 8080
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-echo
-  namespace: ingress-app
+  namespace: virtualserver-app
 data:
   default.conf: |
     server {
@@ -96,4 +92,4 @@ data:
             expires -1;
             return 200 'Server address: $server_addr:$server_port\nServer name: $hostname\nDate: $time_local\nURI: $request_uri\nRequest ID: $request_id\nHost header: $Host\n';
         }
-    }              
+    }

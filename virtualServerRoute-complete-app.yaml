@@ -1,0 +1,181 @@
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: virtualserverroute-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtualserverroute-app
+  namespace: virtualserverroute-app
+  labels:
+    app: virtualserverroute-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: virtualserverroute-app
+  template:
+    metadata:
+      labels:
+        app: virtualserverroute-app
+    spec:
+      containers:
+      - name: virtualserverroute-app
+        image: nginxinc/nginx-unprivileged
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 8081
+            protocol: TCP
+          - containerPort: 8082
+            protocol: TCP                        
+        resources:
+          limits:
+            cpu: "1"
+            memory: "100Mi"
+          requests:
+            cpu: "0.1"
+            memory: "20Mi"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d
+          name: default-conf
+          readOnly: true
+      volumes:
+      - name: default-conf
+        configMap:
+          name: nginx-echo
+          items:
+            - key: default.conf
+              path: default.conf
+            - key: tea.conf
+              path: tea.conf
+            - key: beer.conf
+              path: beer.conf              
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: items-svc
+  namespace: virtualserverroute-app
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: virtualserverroute-app
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: beer-svc
+  namespace: virtualserverroute-app
+spec:
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  selector:
+    app: virtualserverroute-app
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tea-svc
+  namespace: virtualserverroute-app
+spec:
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  selector:
+    app: virtualserverroute-app
+  type: ClusterIP
+
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: hello-virtualserver
+  namespace: virtualserverroute-app
+spec:
+  # which ingress controller to use, must match below
+  ingressClassName: nginx
+  host: hello-vsr.k8s.nginx.rocks
+  # tls:
+  #   secret: cafe-secret
+  upstreams:
+  - name: items-upstream
+    service: items-svc
+    port: 8080
+  routes:
+  - path: /
+    action:
+      pass: items-upstream
+  - path: /items
+    route: hello-virtualserverroute
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: hello-virtualserverroute
+  namespace: virtualserverroute-app
+spec:
+  # which ingress controller to use, must match above
+  ingressClassName: nginx
+  host: hello-vsr.k8s.nginx.rocks
+  # tls:
+  #   secret: cafe-secret
+  upstreams:
+  - name: beer-upstream
+    service: beer-svc
+    port: 8081  
+  - name: tea-upstream
+    service: tea-svc
+    port: 8082
+  subroutes:
+  - path: /items/beer
+    action:
+      pass: beer-upstream
+  - path: /items/tea
+    action:
+      pass: tea-upstream
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-echo
+  namespace: virtualserverroute-app
+data:
+  default.conf: |
+    server {
+        listen 8080;
+        location / {
+            default_type text/plain;
+            expires -1;
+            return 200 'This is default.conf\nServer address: $server_addr:$server_port\nServer name: $hostname\nDate: $time_local\nURI: $request_uri\nRequest ID: $request_id\nHost header: $Host\n';
+        }
+    }
+  beer.conf: |
+    server {
+        listen 8081;
+        location / {
+            default_type text/plain;
+            expires -1;
+            return 200 'This is the beer service!\nServer address: $server_addr:$server_port\nServer name: $hostname\nDate: $time_local\nURI: $request_uri\nRequest ID: $request_id\nHost header: $Host\n';
+        }
+    }
+  tea.conf: |
+    server {
+        listen 8082;
+        location / {
+            default_type text/plain;
+            expires -1;
+            return 200 'This is the tea service!\nServer address: $server_addr:$server_port\nServer name: $hostname\nDate: $time_local\nURI: $request_uri\nRequest ID: $request_id\nHost header: $Host\n';
+        }
+    }        
