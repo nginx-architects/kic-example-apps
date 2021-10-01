@@ -40,7 +40,7 @@ There are several mappings that are required in order enable App Protect. The di
     kubectl get vs vs-arcadia
     ```
 
-    *Note the status should be "Valid"
+    *Note the STATE should be "Valid"*
 
 ## Testing Protection/Exploits
 
