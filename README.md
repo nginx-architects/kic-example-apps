@@ -12,7 +12,7 @@ The yaml files in the root of this repo can be use individual, the entire applic
 
 ## NGINX App Protect
 
-There is a sub-directory in this repo that contains a complete application and ingress definitions that protects ith utilizing the NGINX App Protect WAF.
+There is a sub-directory in this repo that contains a complete application and ingress definitions that protects it utilizing the NGINX App Protect WAF.
 
 The sample application is "Acme Financial" which is a micro-service based deployment. The App Protect example contains two different policies:
 
