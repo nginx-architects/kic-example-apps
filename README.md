@@ -14,7 +14,7 @@ The yaml files in the root of this repo can be use individual, the entire applic
 
 There is a sub-directory in this repo that contains a complete application and ingress definitions that protects it utilizing the NGINX App Protect WAF.
 
-The sample application is "Acme Financial" which is a micro-service based deployment. The App Protect example contains two different policies:
+The sample application is "Arcadia Financial" which is a micro-service based deployment. The App Protect example contains two different policies:
 
 1. An API Security policy that uses an open API spec that defines exactly what URI, method and request body should contain
 1. A "Threat Campaign" policy that uses the F5 Labs high-accuracy (low false positive) patterns. This policy, by default, also enables the default policy which blocks all OWASP top 10 attack patterns.
