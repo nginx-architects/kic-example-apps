@@ -1,0 +1,34 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: external-service
+spec:
+  type: ExternalName
+  externalName: multi-a.nginx.rocks
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: external-name-vs
+  labels:
+    app: external-name-vs
+spec:
+  ingressClassName: nginx
+  host: externalname.gke.nginx.rocks
+  upstreams:
+  - name: external-service
+    service: external-service
+    port: 8080
+    lb-method: round_robin # round_robin, least_conn, random
+    tls:
+      enable: false
+  routes:
+  - path: /
+    action:
+      proxy:
+        upstream: external-service
+        requestHeaders:
+          pass: true
+          set:
+          - name: Host
+            value: www.nginx.com

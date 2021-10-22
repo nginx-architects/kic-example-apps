@@ -1,0 +1,53 @@
+controller:
+  nginxplus: true
+  image:
+    repository: us-central1-docker.pkg.dev/f5-gcs-4299-sales-se-nginx/central1/nginx-plus-ingress
+    tag: 2.0.2-ubi-nap
+  serviceAccount:
+    imagePullSecretName: regcred    
+  setAsDefaultIngress: true
+  ingressClass: nginx
+  enableCustomResources: true
+  enablePreviewPolicies: true
+  enableSnippets: true
+  appprotect:
+    ## Enable the App Protect module in the Ingress Controller.
+    enable: true
+  healthStatus: true
+  enableLatencyMetrics: true
+  nginxStatus:
+    ## Enable the NGINX stub_status, or the NGINX Plus API.
+    enable: true
+    port: 8080
+    ## Add IPv4 IP/CIDR blocks to the allow list for the NGINX Plus API. Separate multiple IP/CIDR by commas.
+    allowCidrs: "0.0.0.0/0"
+  service:
+    type: LoadBalancer
+    extraLabels:
+      # needs to match ServiceMonitor matchLabels
+      app: nginx-ingress-controller
+    customPorts:
+    - name: dashboard
+      targetPort: 8080
+      protocol: TCP
+      port: 8080
+    - name: prometheus
+      targetPort: 9113
+      protocol: TCP
+      port: 9113
+  config:
+    entries:
+      resolver-addresses: kube-dns.kube-system.svc.cluster.local
+      resolver-valid: 5s
+      # http2 is disabled by default, required for grpc
+      http2: "true"
+      # smarter LB method:
+      lb-method: "least_time last_byte"
+      # for debugging
+      error-log-level: info
+      # plus level logging:
+      log-format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" rn="$resource_name" "$resource_type" "$resource_namespace" svc="$service" "$request_id" rt=“$request_time” ua=“$upstream_addr” uct="$upstream_connect_time" uht="$upstream_header_time" urt="$upstream_response_time" uqt=“$upstream_queue_time“ cs=“$upstream_cache_status“'
+prometheus:
+  create: true
+  scheme: http
+  port: 9113
