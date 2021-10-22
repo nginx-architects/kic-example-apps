@@ -26,12 +26,14 @@ Complete documentation is here: [https://docs.nginx.com/nginx-ingress-controller
 
 ## ExternalName Service
 
-A relatively unknown type of service. Per the docs: "An ExternalName Service is a special case of Service that does not have selectors and uses DNS names instead"
+A relatively unknown type of service. Per the docs: "An ExternalName Service is a special case of Service that does not have selectors and uses DNS names instead."
 
-The ExternalName example requires that you configure a DNS resolver for the ingress controller. Any DNS server that can resolve the record works, but preferably use the authoritative server for your zone to avoid potentially outdated cached records.
+This enables you to use your ingress controller to also intelligently load balance "legacy" applications that are not in the kubernetes cluster. This a you to reduce the number of load balancers  while also providing a consitent application delivery architecture 
 
 NGINX Plus will resolve all of the IP addresses behind the A record in your service and load balance them using your configured algorithym. You can see the upstream members via the NGINX Plus API or in the dashboard: 
-![images/externalname-service-nginx-plus-dashbard.png](images/externalname-service-nginx-plus-dashbard.png)
+![images/externalname-service-nginx-plus-dashboard.png](images/externalname-service-nginx-plus-dashboard.png)
+
+The ExternalName example requires that you configure a DNS resolver for the ingress controller. Any DNS server that can resolve the record works, but preferably use the authoritative server for your zone to avoid potentially outdated cached records.
 
 The helm values in this repo contain an example of how to configure a resolver in the nginx configMap.
 
@@ -95,3 +97,8 @@ There are several requests / attacks provided in the tests folder. Note that the
 1. When you run the [app-protect-openapi-arcadia/test/01-post-money-transfer.sh](app-protect-openapi-arcadia/test/01-post-money-transfer.sh) which uses the GET method, the request is blocked.
 
 1. The directory [app-protect-openapi-arcadia/tests](app-protect-openapi-arcadia/tests) contains some common exploits.
+
+
+## Architecture Diagram
+
+![images/externalname-service-nginx-plus-diagram.png](images/externalname-service-nginx-plus-diagram.png)
