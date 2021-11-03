@@ -3,7 +3,8 @@ kind: VirtualServer
 metadata:
   name: vs-arcadia
 spec:
-  host: arcadia-api.gke.nginx.rocks
+  ingressClassName: nginx
+  host: k8s.arcadia-finance.io
   policies:
   - name: waf-policy-threat-campaign
   upstreams:
@@ -24,18 +25,24 @@ spec:
       action:
         pass: main
     - path: /trading
+      action:
+        pass: main        
+    - path: /trading/rest
       policies:
       - name: waf-policy-arcadia-open-api
       action:
-        pass: main        
+        pass: main
     - path: /files
       action:
         pass: backend
     - path: /api
       action:
+        pass: app2        
+    - path: /api/rest
+      action:
         pass: app2
       policies:
-      - name: waf-policy-arcadia-open-api        
+      - name: waf-policy-arcadia-open-api
     - path: /app3
       action:
         pass: app3
