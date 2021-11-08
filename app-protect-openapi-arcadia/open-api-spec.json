@@ -48,7 +48,7 @@
     },
     "/trading/rest/buy_stocks.php": {
       "post": {
-        "summary": "Add stocks to your portfolio",
+        "summary": "buy stocks",
         "requestBody": {
           "required": true,
           "content": {
