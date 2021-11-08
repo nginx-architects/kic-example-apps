@@ -1,10 +1,10 @@
 controller:
   nginxplus: true
   image:
-    repository: us-central1-docker.pkg.dev/f5-gcs-4299-sales-se-nginx/central1/nginx-plus-ingress
-    tag: 2.0.2-ubi-nap
+    repository: private-registry.nginx.com/nginx-ic-nap/nginx-plus-ingress
+    tag: 2.0.3-ubi
   serviceAccount:
-    imagePullSecretName: regcred    
+    imagePullSecretName: regcred2    
   setAsDefaultIngress: true
   ingressClass: nginx
   enableCustomResources: true
