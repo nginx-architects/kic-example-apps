@@ -1,27 +1,43 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: virtualserver-app
+  name: virtualserver-rate-limit
+---
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: rate-limit-policy1
+  namespace: virtualserver-rate-limit
+spec:
+  rateLimit:
+    rate: 1r/m
+    key: ${binary_remote_addr}
+    zoneSize: 10M
+    rejectCode: 429
+# default is 503 Service Temporarily Unavailable
+# 429 Too Many Requests fits better here as it is a client issue, not server
+# Documentation:
+# https://docs.nginx.com/nginx-ingress-controller/configuration/policy-resource/#ratelimit
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: virtualserver-app
-  namespace: virtualserver-app
+  name: virtualserver-rate-limit
+  namespace: virtualserver-rate-limit
   labels:
-    app: virtualserver-app
+    app: virtualserver-rate-limit
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: virtualserver-app
+      app: virtualserver-rate-limit
   template:
     metadata:
       labels:
-        app: virtualserver-app
+        app: virtualserver-rate-limit
     spec:
       containers:
-      - name: virtualserver-app
+      - name: virtualserver-rate-limit
         image: nginxinc/nginx-unprivileged
         ports:
           - containerPort: 8080
@@ -49,40 +65,42 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: virtualserver-app
-  namespace: virtualserver-app
+  name: virtualserver-rate-limit
+  namespace: virtualserver-rate-limit
 spec:
   ports:
-    - name: virtualserver-app
+    - name: virtualserver-rate-limit
       protocol: TCP
       port: 8080
       targetPort: 8080
   selector:
-    app: virtualserver-app
+    app: virtualserver-rate-limit
   type: ClusterIP
 ---
 apiVersion: k8s.nginx.org/v1
 kind: VirtualServer
 metadata:
-  name: virtualserver-app
-  namespace: virtualserver-app
+  name: virtualserver-rate-limit
+  namespace: virtualserver-rate-limit
 spec:
   ingressClassName: nginx
-  host: "hello-vs.k8s.nginx.rocks"
+  host: "rate-limit.k8s.nginx.rocks"
   routes:
   - path: /
     action:
-      pass: virtualserver-app-upstream
+      pass: virtualserver-rate-limit-upstream
+    policies:
+    - name:  rate-limit-policy1
   upstreams:
-    - name: virtualserver-app-upstream
-      service: virtualserver-app
+    - name: virtualserver-rate-limit-upstream
+      service: virtualserver-rate-limit
       port: 8080
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-echo
-  namespace: virtualserver-app
+  namespace: virtualserver-rate-limit
 data:
   default.conf: |
     server {
