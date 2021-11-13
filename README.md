@@ -28,9 +28,9 @@ Complete documentation is here: [https://docs.nginx.com/nginx-ingress-controller
 
 A relatively unknown type of service. Per the docs: "An ExternalName Service is a special case of Service that does not have selectors and uses DNS names instead."
 
-This enables you to use your ingress controller to also intelligently load balance "legacy" applications that are not in the kubernetes cluster. This a you to reduce the number of load balancers  while also providing a consitent application delivery architecture 
+This enables you to use your ingress controller to also intelligently load balance "legacy" applications that are not in the kubernetes cluster. This reduces the number of load balancers while also providing a consistent application delivery architecture.
 
-NGINX Plus will resolve all of the IP addresses behind the A record in your service and load balance them using your configured algorithym. You can see the upstream members via the NGINX Plus API or in the dashboard: 
+NGINX Plus will resolve all of the IP addresses behind the A record in your service and load balance them using your configured algorithm. You can see the upstream members via the NGINX Plus API or in the dashboard:
 ![images/externalname-service-nginx-plus-dashboard.png](images/externalname-service-nginx-plus-dashboard.png)
 
 The ExternalName example requires that you configure a DNS resolver for the ingress controller. Any DNS server that can resolve the record works, but preferably use the authoritative server for your zone to avoid potentially outdated cached records.
@@ -42,7 +42,7 @@ Note that if your target application is expecting a certain host header, you can
 If you do not configure a resolver, you see this message:
 
 ```
-kubectl describe virtualservers.k8s.nginx.org external-name-vs 
+kubectl describe virtualservers.k8s.nginx.org external-name-vs
 ...
 NAME               STATE     HOST
 external-name-vs   Warning   externalname.gke.nginx.rocks
