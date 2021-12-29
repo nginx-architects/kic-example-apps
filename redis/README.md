@@ -8,7 +8,7 @@ This directory contains a sample using redis; this can easily be adapted to othe
 
 ## Helm
 
-In the [values-plus.yaml] there is a section for globalConfiguration which will tell NGINX to listen on non-standard ports- see the redis section in this and the extra services.
+In the [values-plus.yaml](values-plus.yaml) there is a section for globalConfiguration which will tell NGINX to listen on non-standard ports- see the redis section in this and the extra services.
 
 You will need to add the NGINX Helm repository to use it:
 
@@ -22,7 +22,7 @@ Complete documentation is here: [https://docs.nginx.com/nginx-ingress-controller
 
 ## TransportServer Configuration
 
-Deploy both the [redis-deployment.yaml] and [transportserver-ingress.yaml] 
+Deploy both the [redis-deployment.yaml](redis-deployment.yaml) and [transportserver-ingress.yaml](transportserver-ingress.yaml) 
 
 This will create a deployment with 10 pods running redis.
 
