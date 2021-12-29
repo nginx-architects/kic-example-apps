@@ -58,5 +58,5 @@ controller:
       # lb-method: "least_time last_byte"
       # for debugging
       error-log-level: info
-      # plus level logging:
-      # log-format: '$remote_addr [$time_local] $protocol $status $bytes_sent $bytes_received $session_time "$upstream_addr" "$upstream_bytes_sent" "$upstream_bytes_received" "$upstream_connect_time" "$ssl_preread_server_name"'
+      # custom logging:
+      stream-log-format: 'remote_addr: $remote_addr, time: $time_local, protocol: $protocol, status: $status, bytes_sent: $bytes_sent, bytes_received: $bytes_received, session_time: $session_time, upstream_addr: $upstream_addr, upstream_bytes_sent: $upstream_bytes_sent, upstream_bytes_received: $upstream_bytes_received, upstream_connect_time: $upstream_connect_time, ssl_preread_server_name: $ssl_preread_server_name'
